@@ -17,8 +17,7 @@ class Managers extends Model {
       {
         sequelize,
         modelName: "managers",
-        modelName: "managers",
-        tableName: "",
+        tableName: "managers",
         timestamps: false,
       }
     );
