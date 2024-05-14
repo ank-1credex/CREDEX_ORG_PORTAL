@@ -26,7 +26,7 @@ export const updateTheOrgData = async (
 };
 
 export const allMemeberOfManager = async (
-  req: Request,
+  req: Request, 
   res: Response,
   next: NextFunction
 ) => {

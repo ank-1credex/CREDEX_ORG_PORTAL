@@ -49,14 +49,18 @@ export const login = async (
   }
 };
 
-export const signup = async (req: Request, res: Response,next:NextFunction) => {
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const payload = req.body;
     const checkEmailAlreadyExist = await db.user.findOne({
       where: { email: payload.email },
     });
     if (checkEmailAlreadyExist) {
-      throw new CustomError("this email is already registered", 409);
+      throw new CustomError("user alreday Registered !, please login", 409);
     }
     let roles = await db.role.findOne({
       where: { role: payload.role_name },

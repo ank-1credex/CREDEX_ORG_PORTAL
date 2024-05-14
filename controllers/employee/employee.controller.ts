@@ -38,7 +38,6 @@ export const getAllProjects = async (
     const projectNames = allProjects.map(
       (project: { project_name: String }) => project.project_name
     );
-
     return res.status(200).json({ projectNames });
   } catch (error) {
     next(error);
