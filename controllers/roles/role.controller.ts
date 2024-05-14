@@ -1,6 +1,6 @@
-const db = require("../../db/db");
-
-exports.createRole = async (req, res) => {
+import { db } from "../../db/db";
+import { Request, Response } from "express";
+export const createRole = async (req: Request, res: Response) => {
   try {
     const payload = req.body;
     const isRoleFound = await db.role.findOne({
@@ -11,14 +11,14 @@ exports.createRole = async (req, res) => {
         data: "Role already exists",
       });
     }
-    const saveRole = await db.role.create(data);
+    const saveRole = await db.role.create(payload);
     res.status(200).json({ data: saveRole });
   } catch (err) {
     console.log(err);
   }
 };
 
-exports.getRoleById = async (req, res) => {
+export const getRoleById = async (req: Request, res: Response) => {
   try {
     const payload = req.params;
     const role = await db.role.findOne({ where: { role_id: payload.role_id } });
@@ -33,10 +33,10 @@ exports.getRoleById = async (req, res) => {
   }
 };
 
-exports.getRoles = async (req, res) => {
+export const getRoles = async (req: Request, res: Response) => {
   try {
-    const roles = await db.role.find();
-    if (!role) {
+    const roles = await db.role.findAll();
+    if (!roles) {
       return res.status(400).json({
         data: "No role found",
       });

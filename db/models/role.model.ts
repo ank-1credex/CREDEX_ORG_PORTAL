@@ -1,6 +1,8 @@
+import { Sequelize } from "sequelize";
+
 const { DataTypes, Model } = require("sequelize");
-class Managers extends Model {
-  static init(sequelize) {
+export class Role extends Model {
+  static init(sequelize: Sequelize) {
     return super.init(
       {
         id: {
@@ -9,18 +11,17 @@ class Managers extends Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        manager_name: {
+        role: {
           type: DataTypes.STRING,
-          allowNull: false,
+          defaultValue: "USER",
         },
       },
       {
         sequelize,
-        modelName: "managers",
-        tableName: "managers",
+        modelName: "Role",
+        tableName: "roles",
         timestamps: false,
       }
     );
   }
 }
-module.exports = Managers;

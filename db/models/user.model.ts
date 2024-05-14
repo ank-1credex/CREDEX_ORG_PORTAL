@@ -1,6 +1,9 @@
+import { Sequelize } from "sequelize";
+
 const { DataTypes, Model } = require("sequelize");
-class User extends Model {
-  static init(sequelize) {
+
+export class User extends Model {
+  static init(sequelize: Sequelize) {
     return super.init(
       {
         id: {
@@ -11,53 +14,35 @@ class User extends Model {
         },
         registration_date: {
           type: DataTypes.DATE,
-          // defaultValue:Date.now(),
+          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
         },
         first_name: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 45,
         },
         last_name: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 45,
         },
         phone_number: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 45,
         },
         email: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 100,
-          unique: true,
         },
         password: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 150,
         },
         employee_id: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 45,
         },
         gender: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 45,
-        },
-        role_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          length: 45,
-        },
-        manager_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          length: 45,
         },
       },
       {
@@ -69,4 +54,4 @@ class User extends Model {
     );
   }
 }
-module.exports = User;
+

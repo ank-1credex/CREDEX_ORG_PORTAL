@@ -1,6 +1,14 @@
+import { Sequelize } from "sequelize";
+
 const { DataTypes, Model } = require("sequelize");
-class Projects extends Model {
-  static init(sequelize) {
+
+export class Projects extends Model {
+  id!: number;
+  project_name!: string;
+  client_id!: number;
+  is_billable!: boolean;
+
+  static init(sequelize: Sequelize) {
     return super.init(
       {
         id: {
@@ -31,4 +39,3 @@ class Projects extends Model {
     );
   }
 }
-module.exports = Projects;

@@ -1,6 +1,8 @@
-const { DataTypes, Model } = require("sequelize");
-class OrgContribution extends Model {
-  static init(sequelize) {
+import { Sequelize } from "sequelize";
+const { DataTypes, Model} = require("sequelize");
+
+export class OrgContribution extends Model {
+  static init(sequelize: Sequelize) {
     return super.init(
       {
         id: {
@@ -32,7 +34,6 @@ class OrgContribution extends Model {
         },
         message: {
           type: DataTypes.STRING,
-          length: 100,
         },
         approval_mail_screenshot: {
           type: DataTypes.STRING,
@@ -40,7 +41,6 @@ class OrgContribution extends Model {
         status: {
           type: DataTypes.STRING,
           allowNull: false,
-          length: 50,
         },
         is_approved: {
           type: DataTypes.BOOLEAN,
@@ -56,4 +56,3 @@ class OrgContribution extends Model {
     );
   }
 }
-module.exports = OrgContribution;

@@ -1,6 +1,7 @@
+import { Sequelize } from "sequelize";
 const { DataTypes, Model } = require("sequelize");
-class Assignments extends Model {
-  static init(sequelize) {
+export class Client extends Model {
+  static init(sequelize: Sequelize) {
     return super.init(
       {
         id: {
@@ -9,22 +10,21 @@ class Assignments extends Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        project_id: {
-          type: DataTypes.INTEGER,
+        client_name: {
+          type: DataTypes.STRING,
           allowNull: false,
         },
-        user_id: {
-          type: DataTypes.INTEGER,
+        address: {
+          type: DataTypes.STRING,
           allowNull: false,
         },
       },
       {
         sequelize,
-        modelName: "Assignments",
-        tableName: "assignments",
+        modelName: "Clients",
+        tableName: "clients",
         timestamps: false,
       }
     );
   }
 }
-module.exports = Assignments;
