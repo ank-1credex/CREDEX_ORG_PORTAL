@@ -1,26 +1,35 @@
-import { Request, Response } from "express";
-
+import { NextFunction, Request, Response } from "express";
+import { CustomError } from "../../utility/customError";
 import { db } from "../../db/db";
 
-export const updateTheOrgData = async (req: Request, res: Response) => {
-  const payload = req.body;
-  const orgData = await db.orgcontribution.findOne({
-    where: {
-      user_id: payload.user_id,
-      project_id: payload.project_id,
-    },
-  });
-  if (!orgData)
-    return res.status(404).json({
-      message: "no record found for updation",
+export const updateTheOrgData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = req.body;
+    const orgData = await db.orgcontribution.findOne({
+      where: {
+        user_id: payload.user_id,
+        project_id: payload.project_id,
+      },
     });
-  orgData.status = payload.status;
-  orgData.is_approved = payload.is_approved;
-  await orgData.save();
-  return res.status(200).json({ message: "succesfully updated" });
+    if (!orgData) throw new CustomError("no record found", 404);
+    orgData.status = payload.status;
+    orgData.is_approved = payload.is_approved;
+    await orgData.save();
+    return res.status(200).json({ message: "succesfully updated" });
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const allMemeberOfManager = async (req: Request, res: Response) => {
+export const allMemeberOfManager = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const payload = req.body;
     const manager = await db.manager.findOne({
@@ -31,40 +40,43 @@ export const allMemeberOfManager = async (req: Request, res: Response) => {
       where: { ManagerId: manager.id },
     });
     const employeeDetails = allTheEmployee.map(
-      (employee: { first_name: any; id: any }) => ({
+      (employee: { first_name: string; id: number }) => ({
         name: employee.first_name,
         id: employee.id,
       })
     );
     res.status(200).json({ data: employeeDetails });
   } catch (error) {
-    res.status(500).json({ message: "failed to get the data" });
+    next(error);
   }
 };
 
 export const allContributionByEmployee = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const payload = req.body;
     const user = await db.user.findOne({ where: { first_name: payload.name } });
-    if (!user) return res.status(404).json({ message: "no user found" });
+    if (!user) throw new CustomError("no user found with name", 404);
     const allContributions = await db.orgcontribution.findAll({
       where: { user_id: user.id },
     });
     if (allContributions.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "no conribution found for this Employee" });
+      throw new CustomError("no contibution found for this employee", 404);
     }
     return res.status(200).json({ contributiions: allContributions });
   } catch (error) {
-    return res.status(500).json({ message: "failed to get the data" });
+    next(error);
   }
 };
 
-export const uploadingProject = async (req: Request, res: Response) => {
+export const uploadingProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const payload = req.body;
     const { project_name, client_name, address, is_billable } = payload;
@@ -75,8 +87,7 @@ export const uploadingProject = async (req: Request, res: Response) => {
     let project = await db.projects.findOne({
       where: { project_name: project_name },
     });
-    if (project)
-      return res.status(409).json({ message: "project already exist !!" });
+    if (project) throw new CustomError("project already exists", 409);
     project = await db.projects.create({
       client_id: client.id,
       project_name,
@@ -84,6 +95,6 @@ export const uploadingProject = async (req: Request, res: Response) => {
     });
     return res.status(200).json({ projects: project });
   } catch (error) {
-    return res.status(500).json({ message: "failed to create" });
+    next(error);
   }
 };

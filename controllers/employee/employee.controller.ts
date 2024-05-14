@@ -1,10 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { CustomRequest } from "../../interfaces/customRequest.interface";
+import { CustomError } from "../../utility/customError";
 import { db } from "../../db/db";
 
 export const addHoursInOrgContribution = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const payload = req.body;
@@ -20,38 +22,46 @@ export const addHoursInOrgContribution = async (
     };
     const saveOrghours = await db.orgcontribution.create(data);
     res.status(200).json({ data: saveOrghours });
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    next(error);
   }
 };
 
-export const getAllProjects = async (req: CustomRequest, res: Response) => {
+export const getAllProjects = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const allProjects = await db.projects.findAll();
-    if (!allProjects)
-      return res.status(404).json({ message: "no project found !!" });
+    if (!allProjects) throw new CustomError("no project found !!", 404);
     const projectNames = allProjects.map(
       (project: { project_name: String }) => project.project_name
     );
 
     return res.status(200).json({ projectNames });
   } catch (error) {
-    res.status(500).json({ message: "failed to get data " });
+    next(error);
   }
 };
 
-export const getTheOrgData = async (req: Request, res: Response) => {
-  const payload = req.body;
-  const orgData = await db.orgcontribution.findOne({
-    where: {
-      user_id: payload.user_id,
-      project_id: payload.project_id,
-    },
-  });
-  if (!orgData)
-    return res
-      .status(404)
-      .json({ message: "no contribution found for this project" });
-  return res.status(200).json({ data: orgData });
+export const getTheOrgData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = req.body;
+    const orgData = await db.orgcontribution.findOne({
+      where: {
+        user_id: payload.user_id,
+        project_id: payload.project_id,
+      },
+    });
+    if (!orgData)
+      throw new CustomError("no contribution found for this project", 404);
+    return res.status(200).json({ data: orgData });
+  } catch (error) {
+    next(error);
+  }
 };
-
