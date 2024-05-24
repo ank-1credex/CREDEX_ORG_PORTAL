@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-const { DataTypes, Model} = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 
 export class OrgContribution extends Model {
   static init(sequelize: Sequelize) {
@@ -30,7 +30,7 @@ export class OrgContribution extends Model {
         applied_date: {
           type: DataTypes.DATE,
           allowNull: false,
-          //   defaultValue: Date.now(),
+          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
         },
         message: {
           type: DataTypes.STRING,

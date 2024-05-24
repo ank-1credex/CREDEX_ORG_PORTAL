@@ -4,21 +4,27 @@ import { CustomError } from "../../utility/customError";
 import { db } from "../../db/db";
 
 export const addHoursInOrgContribution = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const payload = req.body;
+    const project = await db.projects.findOne({
+      where: {
+        project_name: payload.projectName,
+      },
+    });
+    if (!project) throw new CustomError("no project found !!", 404);
     const data = {
-      project_id: payload.project_id,
-      user_id: payload.user_id,
-      hours: payload.hours,
-      actual_hours: payload.actual_hours,
-      is_approved: payload.is_approved,
-      message: payload.message,
-      approval_mail_screenshot: payload.approval_mail_screenshot,
-      status: payload.status,
+      project_id: project.id,
+      user_id: req.user.id,
+      hours: payload.Hours,
+      actual_hours: "0",
+      is_approved: "0",
+      message: payload.Message,
+      approval_mail_screenshot: payload.Quarter,
+      status: "pending",
     };
     const saveOrghours = await db.orgcontribution.create(data);
     res.status(200).json({ data: saveOrghours });

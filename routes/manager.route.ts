@@ -11,28 +11,28 @@ import {
 import { authenticate } from "../utility/authenticate";
 import { roleBased } from "../utility/roleBasedAccess";
 
-router.get(
+router.post(
   "/allMemberOfManager",
-  authenticate,
-  roleBased("manager"),
+   authenticate,
+  // roleBased("manager"),
   allMemeberOfManager
 );
-router.get(
+router.post(
   "/allContributionByEmployee",
-  authenticate,
-  roleBased("manager"),
+  // authenticate,
+  // roleBased("manager"),
   allContributionByEmployee
 );
-router.put(
+router.post(
   "/updateTheOrgData",
-  authenticate,
-  roleBased("manager"),
+  // authenticate,
+  // roleBased("manager"),
   updateTheOrgData
 );
 router.post(
   "/uploadingProject",
-  authenticate,
-  roleBased("manager"),
+  // authenticate,
+  // roleBased("manager"),
   uploadingProject
 );
 

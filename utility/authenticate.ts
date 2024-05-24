@@ -1,5 +1,5 @@
-import jwt, { Secret } from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { Response, NextFunction } from "express";
 import { CustomError } from "./customError";
 import { CustomRequest } from "../interfaces/customRequest.interface";
 
@@ -9,11 +9,10 @@ export const authenticate = async (
   next: NextFunction
 ) => {
   try {
-    let token: any = req.header("Authorization");
+    let token: any = req.cookies.token;
     if (!token) {
       throw new CustomError("unauthnticated user", 401);
     }
-    token = token.split(" ")[1];
     let result;
     jwt.verify(
       token,

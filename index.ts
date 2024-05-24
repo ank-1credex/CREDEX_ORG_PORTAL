@@ -3,6 +3,9 @@ import bodyParser from "body-parser";
 import { configVariable } from "./config/env.config";
 import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "./interfaces/error.interface";
+var cookieParser = require("cookie-parser");
+const cors = require("cors");
+
 const app = express();
 
 const index_route = require("./routes/index");
@@ -12,7 +15,15 @@ const port = parseInt(configVariable.port);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ limit: "300mb", extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 app.use("/api/v1/", index_route);
+
 app.all("*", (req, res, next) => {
   const err = new CustomError(`can not find ${req.url} resource`, 404);
   next(err);

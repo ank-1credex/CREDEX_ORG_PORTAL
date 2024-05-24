@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { CustomError } from "../../utility/customError";
 import { db } from "../../db/db";
+import { CustomRequest } from "../../interfaces/customRequest.interface";
 
 export const updateTheOrgData = async (
   req: Request,
@@ -26,14 +27,13 @@ export const updateTheOrgData = async (
 };
 
 export const allMemeberOfManager = async (
-  req: Request, 
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const payload = req.body;
     const manager = await db.manager.findOne({
-      where: { manager_name: payload.manager_name },
+      where: { manager_name: req.user.name },
     });
 
     const allTheEmployee = await db.user.findAll({
@@ -79,19 +79,21 @@ export const uploadingProject = async (
 ) => {
   try {
     const payload = req.body;
-    const { project_name, client_name, address, is_billable } = payload;
+    const { projectName, clientName, address, isBillable } = payload;
     let client = await db.client.findOne({
-      where: { client_name: client_name },
+      where: { client_name: clientName },
     });
-    if (!client) client = await db.client.create({ client_name, address });
+    if (!client) client = await db.client.create({ clientName, address });
     let project = await db.projects.findOne({
-      where: { project_name: project_name },
+      where: { project_name: projectName },
     });
     if (project) throw new CustomError("project already exists", 409);
+    // if (project)
+    //   return res.status(409).json({ message: "project already exist" });
     project = await db.projects.create({
       client_id: client.id,
-      project_name,
-      is_billable,
+      project_name: projectName,
+      is_billable: isBillable,
     });
     return res.status(200).json({ projects: project });
   } catch (error) {

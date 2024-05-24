@@ -27,6 +27,7 @@ export const login = async (
     const roles = await db.role.findOne({ where: { id: isUserExist.RoleId } });
     const token = {
       email: isUserExist.dataValues.email,
+      name: `${isUserExist.dataValues.first_name} ${isUserExist.dataValues.last_name}`,
       id: isUserExist.id,
       role: roles.dataValues.role,
       date: Date.now(),
@@ -35,12 +36,16 @@ export const login = async (
       expiresIn: "50m",
     });
     const data = {
-      accessToken,
       name: `${isUserExist.dataValues.first_name} ${isUserExist.dataValues.last_name}`,
       email: payload.email,
       id: isUserExist.id,
       data: Date.now(),
+      role: roles.dataValues.role,
     };
+    res.cookie("token", accessToken, {
+      httpOnly: false,
+      secure: false,
+    });
     return res.status(200).json({
       data: data,
     });
@@ -86,6 +91,7 @@ export const signup = async (
       phone_number: payload.phone_number,
       email: payload.email,
       password: passwordHash,
+
       gender: payload.gender,
       RoleId: roles.id,
       ManagerId: manager.id,
