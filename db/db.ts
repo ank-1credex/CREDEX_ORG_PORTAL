@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize";
 import { User } from "../db/models/user.model";
-import { Assignments } from "./models/assignments.model";
 import { Role } from "./models/role.model";
 import { Projects } from "./models/projects.model";
 import { OrgContribution } from "./models/org-contribution.model";
@@ -32,7 +31,6 @@ const sequelize = new Sequelize(
 
 const models = {
   user: User.init(sequelize),
-  assignment: Assignments.init(sequelize),
   role: Role.init(sequelize),
   projects: Projects.init(sequelize),
   orgcontribution: OrgContribution.init(sequelize),
