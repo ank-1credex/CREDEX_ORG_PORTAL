@@ -1,3 +1,4 @@
+import { allow } from "joi";
 import { Sequelize } from "sequelize";
 const { DataTypes, Model } = require("sequelize");
 
@@ -23,10 +24,6 @@ export class OrgContribution extends Model {
           type: DataTypes.TIME,
           allowNull: false,
         },
-        actual_hours: {
-          type: DataTypes.TIME,
-          allowNull: false,
-        },
         applied_date: {
           type: DataTypes.DATE,
           allowNull: false,
@@ -35,15 +32,12 @@ export class OrgContribution extends Model {
         message: {
           type: DataTypes.STRING,
         },
-        approval_mail_screenshot: {
-          type: DataTypes.STRING,
-        },
         status: {
           type: DataTypes.STRING,
           allowNull: false,
         },
-        is_approved: {
-          type: DataTypes.BOOLEAN,
+        quarter: {
+          type: DataTypes.STRING,
           allowNull: false,
         },
       },

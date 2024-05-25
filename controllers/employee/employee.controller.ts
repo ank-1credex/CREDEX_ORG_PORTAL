@@ -20,10 +20,8 @@ export const addHoursInOrgContribution = async (
       project_id: project.id,
       user_id: req.user.id,
       hours: payload.Hours,
-      actual_hours: "0",
-      is_approved: "0",
       message: payload.Message,
-      approval_mail_screenshot: payload.Quarter,
+      quarter: payload.Quarter,
       status: "pending",
     };
     const saveOrghours = await db.orgcontribution.create(data);
@@ -66,6 +64,24 @@ export const getTheOrgData = async (
     if (!orgData)
       throw new CustomError("no contribution found for this project", 404);
     return res.status(200).json({ data: orgData });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const AllcontributionOfEmployee = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const value = req.user.id;
+    const allContributions = await db.orgcontribution.findAll({
+      where: { user_id: value },
+    });
+    if (!allContributions)
+      throw new CustomError("no contributions founds", 404);
+    return res.status(200).json({ data: allContributions });
   } catch (error) {
     next(error);
   }

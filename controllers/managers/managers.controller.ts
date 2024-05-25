@@ -35,7 +35,6 @@ export const allMemeberOfManager = async (
     const manager = await db.manager.findOne({
       where: { manager_name: req.user.name },
     });
-
     const allTheEmployee = await db.user.findAll({
       where: { ManagerId: manager.id },
     });
@@ -83,13 +82,15 @@ export const uploadingProject = async (
     let client = await db.client.findOne({
       where: { client_name: clientName },
     });
-    if (!client) client = await db.client.create({ clientName, address });
+    if (!client)
+      client = await db.client.create({
+        client_name: clientName,
+        address: address,
+      });
     let project = await db.projects.findOne({
       where: { project_name: projectName },
     });
     if (project) throw new CustomError("project already exists", 409);
-    // if (project)
-    //   return res.status(409).json({ message: "project already exist" });
     project = await db.projects.create({
       client_id: client.id,
       project_name: projectName,

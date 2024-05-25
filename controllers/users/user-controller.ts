@@ -27,7 +27,7 @@ export const login = async (
     const roles = await db.role.findOne({ where: { id: isUserExist.RoleId } });
     const token = {
       email: isUserExist.dataValues.email,
-      name: `${isUserExist.dataValues.first_name} ${isUserExist.dataValues.last_name}`,
+      name: `${isUserExist.dataValues.first_name}${isUserExist.dataValues.last_name}`,
       id: isUserExist.id,
       role: roles.dataValues.role,
       date: Date.now(),
@@ -36,7 +36,7 @@ export const login = async (
       expiresIn: "50m",
     });
     const data = {
-      name: `${isUserExist.dataValues.first_name} ${isUserExist.dataValues.last_name}`,
+      name: `${isUserExist.dataValues.first_name}${isUserExist.dataValues.last_name}`,
       email: payload.email,
       id: isUserExist.id,
       data: Date.now(),
@@ -68,34 +68,31 @@ export const signup = async (
       throw new CustomError("user alreday Registered !, please login", 409);
     }
     let roles = await db.role.findOne({
-      where: { role: payload.role_name },
+      where: { role: "employee" },
     });
     if (!roles) {
-      roles = await db.role.create({ role: payload.role_name });
+      roles = await db.role.create();
     }
     let manager = await db.manager.findOne({
-      where: { manager_name: payload.manager_name },
+      where: { manager_name: payload.managerName },
     });
 
     if (!manager) {
       manager = await db.manager.create({
-        manager_name: payload.manager_name,
+        manager_name: payload.managerName,
       });
     }
 
     const passwordHash = await bcrypt.hash(payload.password, 10);
 
     const obj = {
-      first_name: payload.first_name,
-      last_name: payload.last_name,
-      phone_number: payload.phone_number,
+      first_name: payload.firstName,
+      last_name: payload.lastName,
       email: payload.email,
       password: passwordHash,
-
-      gender: payload.gender,
       RoleId: roles.id,
       ManagerId: manager.id,
-      employee_id: payload.employee_id,
+      employee_id: payload.employeeId,
     };
     const data = await db.user.create(obj);
     return res.status(200).json({

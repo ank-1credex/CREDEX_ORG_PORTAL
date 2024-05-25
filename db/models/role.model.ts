@@ -13,7 +13,7 @@ export class Role extends Model {
         },
         role: {
           type: DataTypes.STRING,
-          defaultValue: "USER",
+          defaultValue: "employee",
         },
       },
       {

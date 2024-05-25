@@ -5,6 +5,7 @@ import {
   getAllProjects,
   getTheOrgData,
   addHoursInOrgContribution,
+  AllcontributionOfEmployee,
 } from "../controllers/employee/employee.controller";
 import { authenticate } from "../utility/authenticate";
 import { roleBased } from "../utility/roleBasedAccess";
@@ -14,7 +15,7 @@ router.get(
   authenticate,
   // roleBased("employee"),
   getAllProjects
-);
+);  
 
 router.post(
   "/addHoursInOrgContribution",
@@ -26,6 +27,13 @@ router.get(
   authenticate,
   // roleBased("employee"),
   getTheOrgData
+);
+
+router.get(
+  "/AllcontributionOfEmployee",
+  authenticate,
+  // roleBased("employee"),
+  AllcontributionOfEmployee
 );
 
 module.exports = router;
