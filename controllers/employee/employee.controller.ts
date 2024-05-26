@@ -9,7 +9,7 @@ export const addHoursInOrgContribution = async (
   next: NextFunction
 ) => {
   try {
-    const payload = req.body;
+    const payload = req.body; 
     const project = await db.projects.findOne({
       where: {
         project_name: payload.projectName,

@@ -101,3 +101,33 @@ export const uploadingProject = async (
     next(error);
   }
 };
+
+export const getAllProjectList = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const allProjects = await db.projects.findAll();
+    if (!allProjects) throw new CustomError("no project found !!", 404);
+    return res.status(200).json({ data: allProjects });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteProject = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = req.body;
+    console.log(req.user);
+    const result = await db.projects.destroy({ where: { id: payload.id } });
+    if (!result) throw new CustomError("failed to delete", 400);
+    return res.status(200).json({ message: "successfully deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
