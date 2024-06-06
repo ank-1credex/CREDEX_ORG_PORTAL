@@ -12,8 +12,10 @@ export class Role extends Model {
           autoIncrement: true,
         },
         role: {
-          type: DataTypes.STRING,
+          type: DataTypes.ENUM,
+          values: ["employee", "manager", "admin"],
           defaultValue: "employee",
+          allowNull: false,
         },
       },
       {

@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize";
-import { User } from "../db/models/user.model";
-import { Role } from "./models/role.model";
-import { Projects } from "./models/projects.model";
-import { OrgContribution } from "./models/org-contribution.model";
-import { Managers } from "./models/managers.model";
+import { User } from "./model/user.model";
+import { Role } from "./model/role.model";
+import { Projects } from "./model/project.model";
+import { OrgContribution } from "./model/org-contribution.model";
+import { Managers } from "./model/manager.model";
 import { configVariable } from "../config/env.config";
-import { Client } from "./models/client.model";
+import { Client } from "./model/client.model";
 
 const sequelize = new Sequelize(
   configVariable.databaseName,

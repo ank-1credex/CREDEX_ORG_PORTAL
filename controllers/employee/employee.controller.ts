@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CustomRequest } from "../../interfaces/customRequest.interface";
+import { CustomRequest } from "../../interface/customRequest.interface";
 import { CustomError } from "../../utility/customError";
 import { db } from "../../db/db";
 
@@ -9,20 +9,20 @@ export const addHoursInOrgContribution = async (
   next: NextFunction
 ) => {
   try {
-    const payload = req.body; 
+    const payload = req.body;
     const project = await db.projects.findOne({
       where: {
         project_name: payload.projectName,
       },
     });
-    if (!project) throw new CustomError("no project found !!", 404);
+    if (!project) return res.status(204).json({ message: "not found" });
     const data = {
       project_id: project.id,
       user_id: req.user.id,
       hours: payload.Hours,
       message: payload.Message,
       quarter: payload.Quarter,
-      status: "pending",
+      status: payload.Status,
     };
     const saveOrghours = await db.orgcontribution.create(data);
     res.status(200).json({ data: saveOrghours });
@@ -38,7 +38,7 @@ export const getAllProjects = async (
 ) => {
   try {
     const allProjects = await db.projects.findAll();
-    if (!allProjects) throw new CustomError("no project found !!", 404);
+    if (!allProjects) return res.status(204).json({ message: "not found" });
     const projectNames = allProjects.map(
       (project: { project_name: String }) => project.project_name
     );
@@ -61,8 +61,7 @@ export const getTheOrgData = async (
         project_id: payload.project_id,
       },
     });
-    if (!orgData)
-      throw new CustomError("no contribution found for this project", 404);
+    if (!orgData) return res.status(204).json({ message: "not found" });
     return res.status(200).json({ data: orgData });
   } catch (error) {
     next(error);
@@ -76,12 +75,54 @@ export const AllcontributionOfEmployee = async (
 ) => {
   try {
     const value = req.user.id;
-    const allContributions = await db.orgcontribution.findAll({
+    const allContribution = await db.orgcontribution.findAll({
       where: { user_id: value },
     });
-    if (!allContributions)
-      throw new CustomError("no contributions founds", 404);
-    return res.status(200).json({ data: allContributions });
+    if (!allContribution) return res.status(204).json({ message: "not found" });
+    const project = await db.projects.findAll();
+    return res.status(200).json({
+      data: {
+        allContribution: allContribution,
+        Project: project,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateEmployeeContributionData = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = req.body;
+    const employeData = await db.orgcontribution.findOne({
+      where: { id: payload.id },
+    });
+    if (!employeData) return res.status(204).json({ message: "no data found" });
+    await employeData.update({ ...payload, status: "Pending" });
+    return res.status(200).json({ message: "succesfully updated" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteEmployeeContributionData = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = req.body;
+    await db.orgcontribution.destroy({
+      where: {
+        id: payload.id,
+      },
+    });
+
+    return res.status(200).json({ message: "succesfully deleted" });
   } catch (error) {
     next(error);
   }

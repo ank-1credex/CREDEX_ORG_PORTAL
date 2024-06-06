@@ -1,6 +1,7 @@
 import { allow } from "joi";
 import { Sequelize } from "sequelize";
 const { DataTypes, Model } = require("sequelize");
+import { currentDay } from "../../utility/day";
 
 export class OrgContribution extends Model {
   static init(sequelize: Sequelize) {
@@ -21,7 +22,7 @@ export class OrgContribution extends Model {
           allowNull: false,
         },
         hours: {
-          type: DataTypes.TIME,
+          type: DataTypes.FLOAT,
           allowNull: false,
         },
         applied_date: {
@@ -39,6 +40,14 @@ export class OrgContribution extends Model {
         quarter: {
           type: DataTypes.STRING,
           allowNull: false,
+        },
+        day: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: currentDay(),
+        },
+        Remarks: {
+          type: DataTypes.TEXT,
         },
       },
       {

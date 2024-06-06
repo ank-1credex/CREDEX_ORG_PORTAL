@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "./customError";
-import { CustomRequest } from "../interfaces/customRequest.interface";
+import { CustomRequest } from "../interface/customRequest.interface";
 
 export const roleBased =
   (roles: string) =>

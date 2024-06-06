@@ -27,25 +27,28 @@ export const login = async (
     const roles = await db.role.findOne({ where: { id: isUserExist.RoleId } });
     const token = {
       email: isUserExist.dataValues.email,
-      name: `${isUserExist.dataValues.first_name}${isUserExist.dataValues.last_name}`,
+      name: `${isUserExist.dataValues.first_name} ${isUserExist.dataValues.last_name}`,
       id: isUserExist.id,
       role: roles.dataValues.role,
       date: Date.now(),
     };
+    
     const accessToken = Jwt.sign(token, configVariable.secret_key, {
       expiresIn: "50m",
     });
     const data = {
-      name: `${isUserExist.dataValues.first_name}${isUserExist.dataValues.last_name}`,
+      name: `${isUserExist.dataValues.first_name} ${isUserExist.dataValues.last_name}`,
       email: payload.email,
       id: isUserExist.id,
       data: Date.now(),
       role: roles.dataValues.role,
     };
+
     res.cookie("token", accessToken, {
       httpOnly: false,
       secure: false,
     });
+
     return res.status(200).json({
       data: data,
     });
@@ -95,7 +98,7 @@ export const signup = async (
       employee_id: payload.employeeId,
     };
     const data = await db.user.create(obj);
-    return res.status(200).json({
+    return res.status(201).json({
       data: data,
     });
   } catch (err) {
@@ -103,62 +106,20 @@ export const signup = async (
   }
 };
 
-export const getUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await db.user.findAll();
-    if (!users) {
-      res.status(200).send("No user found");
-    }
-    res.status(200).json({
-      data: users,
-    });
-  } catch (err) {
-    throw err;
-  }
-};
-
-export const getUserById = async (req: Request, res: Response) => {
-  try {
-    const userId = req.params.id;
-    const user = await db.user.findOne({ where: { user_id: userId } });
-    if (!user) {
-      res.status(200).send("No user found");
-    }
-    res.status(200).json({
-      data: user,
-    });
-  } catch (err) {
-    throw err;
-  }
-};
-
-export const getUsersByManagerId = async (req: Request, res: Response) => {
-  try {
-    const payload = req.query;
-    const users = await db.user.findAll({
-      where: { manager_id: payload.id, role_id: 2 },
-    });
-    if (!users) {
-      res.status(200).send("No user found");
-    }
-    res.status(200).json({
-      data: users,
-    });
-  } catch (err) {
-    throw err;
-  }
-};
-
-export const getManagers = async (req: Request, res: Response) => {
+export const getManagers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const managersList = await db.manager.findAll();
     if (!managersList) {
-      throw "No Manager Found";
+      return res.status(204).json({ message: "no data found" });
     }
     res.status(200).json({
       data: managersList,
     });
   } catch (err) {
-    throw err;
+    next(err);
   }
 };

@@ -8,47 +8,63 @@ import {
   uploadingProject,
   getAllProjectList,
   deleteProject,
-} from "../controllers/managers/managers.controller";
+  clients,
+  updateProjectname,
+} from "../controllers/manager/managers.controller";
 
 import { authenticate } from "../utility/authenticate";
 import { roleBased } from "../utility/roleBasedAccess";
 
-router.post(
+router.get(
   "/allMemberOfManager",
   authenticate,
-  // roleBased("manager"),
+  roleBased("manager"),
   allMemeberOfManager
 );
 router.post(
   "/allContributionByEmployee",
-  // authenticate,
-  // roleBased("manager"),
+  authenticate,
+  roleBased("manager"),
   allContributionByEmployee
 );
 router.post(
   "/updateTheOrgData",
-  // authenticate,
-  // roleBased("manager"),
+  authenticate,
+  roleBased("manager"),
   updateTheOrgData
 );
 router.post(
   "/uploadingProject",
-  // authenticate,
-  // roleBased("manager"),
+  authenticate,
+  roleBased("manager"),
   uploadingProject
 );
 
 router.get(
   "/getAllProjectList",
-  // authenticate,
-  // roleBased("manager"),
+  authenticate,
+  roleBased("manager"),
   getAllProjectList
 );
 
 router.delete(
   "/deleteProjects",
   authenticate,
-  // roleBased("manager"),
+  roleBased("manager"),
   deleteProject
+);
+
+router.get(
+  "/clients",
+  authenticate,
+  roleBased("manager"),
+  clients
+);
+
+router.put(
+  "/updateProjectname",
+  authenticate,
+  roleBased("manager"),
+  updateProjectname
 );
 module.exports = router;

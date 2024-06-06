@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+const { Op } = require("sequelize");
 import { CustomError } from "../../utility/customError";
 import { db } from "../../db/db";
-import { CustomRequest } from "../../interfaces/customRequest.interface";
+import { CustomRequest } from "../../interface/customRequest.interface";
 
 export const updateTheOrgData = async (
   req: Request,
@@ -12,15 +13,25 @@ export const updateTheOrgData = async (
     const payload = req.body;
     const orgData = await db.orgcontribution.findOne({
       where: {
-        user_id: payload.user_id,
-        project_id: payload.project_id,
+        id: payload.id,
       },
     });
-    if (!orgData) throw new CustomError("no record found", 404);
+    if (!orgData) return res.status(204).json({ message: "not found" });
     orgData.status = payload.status;
-    orgData.is_approved = payload.is_approved;
-    await orgData.save();
-    return res.status(200).json({ message: "succesfully updated" });
+    const data = await orgData.save();
+    const user = await db.user.findOne({ where: { first_name: payload.name } });
+    if (!user) return res.status(204).json({ message: "not found" });
+    const allContributions = await db.orgcontribution.findAll({
+      where: {
+        user_id: {
+          [Op.eq]: user.id,
+        },
+        status: {
+          [Op.ne]: "Draft",
+        },
+      },
+    });
+    return res.status(200).json({ data: allContributions });
   } catch (error) {
     next(error);
   }
@@ -38,32 +49,33 @@ export const allMemeberOfManager = async (
     const allTheEmployee = await db.user.findAll({
       where: { ManagerId: manager.id },
     });
-    const employeeDetails = allTheEmployee.map(
-      (employee: { first_name: string; id: number }) => ({
-        name: employee.first_name,
-        id: employee.id,
-      })
-    );
-    res.status(200).json({ data: employeeDetails });
+    res.status(200).json({ data: allTheEmployee });
   } catch (error) {
     next(error);
   }
 };
 
 export const allContributionByEmployee = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const payload = req.body;
     const user = await db.user.findOne({ where: { first_name: payload.name } });
-    if (!user) throw new CustomError("no user found with name", 404);
+    if (!user) return res.status(204).json({ message: "not found" });
     const allContributions = await db.orgcontribution.findAll({
-      where: { user_id: user.id },
+      where: {
+        user_id: {
+          [Op.eq]: user.id,
+        },
+        status: {
+          [Op.ne]: "Draft",
+        },
+      },
     });
     if (allContributions.length === 0) {
-      throw new CustomError("no contibution found for this employee", 404);
+      return res.status(404).json({ message: "not found" });
     }
     return res.status(200).json({ contributiions: allContributions });
   } catch (error) {
@@ -96,7 +108,7 @@ export const uploadingProject = async (
       project_name: projectName,
       is_billable: isBillable,
     });
-    return res.status(200).json({ projects: project });
+    return res.status(201).json({ projects: project });
   } catch (error) {
     next(error);
   }
@@ -109,7 +121,7 @@ export const getAllProjectList = async (
 ) => {
   try {
     const allProjects = await db.projects.findAll();
-    if (!allProjects) throw new CustomError("no project found !!", 404);
+    if (!allProjects) return res.status(204).json({ message: "not found" });
     return res.status(200).json({ data: allProjects });
   } catch (error) {
     next(error);
@@ -123,11 +135,44 @@ export const deleteProject = async (
 ) => {
   try {
     const payload = req.body;
-    console.log(req.user);
     const result = await db.projects.destroy({ where: { id: payload.id } });
     if (!result) throw new CustomError("failed to delete", 400);
     return res.status(200).json({ message: "successfully deleted" });
   } catch (error) {
+    next(error);
+  }
+};
+
+export const clients = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const clients = await db.client.findAll();
+    const clientName = clients.map(
+      (client: { client_name: String }) => client.client_name
+    );
+    return res.status(200).json({ data: clientName });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProjectname = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = req.body;
+    const project = await db.projects.findOne({
+      where: { id: payload.id },
+    });
+    await project.update({ ...payload });
+    return res.status(200).json({ data: "succesfully updated" });
+  } catch (error) {
+    console.log(error);
     next(error);
   }
 };

@@ -2,13 +2,15 @@ import express from "express";
 import bodyParser from "body-parser";
 import { configVariable } from "./config/env.config";
 import { Request, Response, NextFunction } from "express";
-import { errorResponse } from "./interfaces/error.interface";
+import { errorResponse } from "./interface/error.interface";
+import cors from "cors";
+import { corsUrl } from "./config/corsport.config";
+
 var cookieParser = require("cookie-parser");
-const cors = require("cors");
 
 const app = express();
 
-const index_route = require("./routes/index");
+const index_route = require("./route/index");
 import { CustomError } from "./utility/customError";
 import { db } from "./db/db";
 const port = parseInt(configVariable.port);
@@ -17,7 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ limit: "300mb", extended: true }));
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: corsUrl.origin,
     credentials: true,
   })
 );
@@ -43,7 +45,8 @@ app.use(
 db.sequelize
   .authenticate()
   .then(() => {
-    db.sequelize.sync();
+    const now = new Date();
+    db.sequelize.sync({ alter: true });
     app.listen(port, () => {
       console.log(`Backend server started on port 4000`);
     });
